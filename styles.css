@@ -1,0 +1,9 @@
+body {
+    margin: 0;
+    overflow: hidden; /* Prevent scrollbars from showing */
+    background-color: #1a1a2e; /* Dark background for glowing effect */
+}
+
+#blobCanvas {
+    display: block;
+}

@@ -295,13 +295,20 @@ function removeColor(index) {
 }
 
 function editColor(index) {
+    // Get the clicked color tag element
+    const colorTag = document.getElementById(`color-${index}`);
+    const rect = colorTag.getBoundingClientRect();
+
     // Create invisible color picker
     const colorPicker = document.createElement("input");
     colorPicker.type = "color";
     colorPicker.value = colors[index];
-    colorPicker.style.position = "absolute";
-    colorPicker.style.left = "-9999px";
-    colorPicker.style.top = "-9999px";
+    colorPicker.style.position = "fixed";
+    colorPicker.style.left = rect.left + "px";
+    colorPicker.style.top = rect.bottom + 5 + "px";
+    colorPicker.style.opacity = "0";
+    colorPicker.style.pointerEvents = "none";
+    colorPicker.style.zIndex = "9999";
 
     document.body.appendChild(colorPicker);
 

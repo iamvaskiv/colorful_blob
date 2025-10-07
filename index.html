@@ -290,12 +290,38 @@
 
         <div class="controls-panel">
             <div class="control-section">
-                <div class="control-title">Circle Count</div>
+                <div class="control-title">Shape</div>
                 <div class="control-row">
                     <input
                         type="range"
                         class="slider"
-                        id="circleCount"
+                        id="shapeType"
+                        min="0"
+                        max="1"
+                        step="1"
+                        value="0"
+                    />
+                    <select
+                        class="number-input"
+                        id="shapeTypeInput"
+                        style="width: 80px; text-align: center"
+                    >
+                        <option value="0">Circle</option>
+                        <option value="1">Square</option>
+                    </select>
+                </div>
+                <div class="value-display">
+                    Current: <span id="shapeTypeValue">Circle</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-title">Shape Count</div>
+                <div class="control-row">
+                    <input
+                        type="range"
+                        class="slider"
+                        id="shapeCount"
                         min="1"
                         max="32"
                         value="6"
@@ -303,19 +329,19 @@
                     <input
                         type="number"
                         class="number-input"
-                        id="circleCountInput"
+                        id="shapeCountInput"
                         min="1"
                         max="32"
                         value="6"
                     />
                 </div>
                 <div class="value-display">
-                    Current: <span id="circleCountValue">6</span> circles
+                    Current: <span id="shapeCountValue">6</span> shapes
                 </div>
             </div>
 
-            <div class="control-section">
-                <div class="control-title">Circle Radius</div>
+            <div class="control-section" id="sizeControl">
+                <div class="control-title">Size</div>
                 <div class="control-row">
                     <input
                         type="range"
@@ -336,6 +362,64 @@
                 </div>
                 <div class="value-display">
                     Current: <span id="circleRadiusValue">40</span> pixels
+                </div>
+            </div>
+
+            <div
+                class="control-section"
+                id="squareControls"
+                style="display: none"
+            >
+                <div class="control-title">Square Width</div>
+                <div class="control-row">
+                    <input
+                        type="range"
+                        class="slider"
+                        id="squareWidth"
+                        min="2"
+                        max="100"
+                        value="40"
+                    />
+                    <input
+                        type="number"
+                        class="number-input"
+                        id="squareWidthInput"
+                        min="2"
+                        max="100"
+                        value="40"
+                    />
+                </div>
+                <div class="value-display">
+                    Current: <span id="squareWidthValue">40</span> pixels
+                </div>
+            </div>
+
+            <div
+                class="control-section"
+                id="squareHeightSection"
+                style="display: none"
+            >
+                <div class="control-title">Square Height</div>
+                <div class="control-row">
+                    <input
+                        type="range"
+                        class="slider"
+                        id="squareHeight"
+                        min="2"
+                        max="100"
+                        value="40"
+                    />
+                    <input
+                        type="number"
+                        class="number-input"
+                        id="squareHeightInput"
+                        min="2"
+                        max="100"
+                        value="40"
+                    />
+                </div>
+                <div class="value-display">
+                    Current: <span id="squareHeightValue">40</span> pixels
                 </div>
             </div>
 
@@ -501,7 +585,7 @@
             </div>
 
             <div class="control-section">
-                <div class="control-title">Circle Colors</div>
+                <div class="control-title">Colors</div>
                 <div id="colorList" class="color-list">
                     <!-- Colors will be dynamically added here -->
                 </div>

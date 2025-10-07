@@ -1,0 +1,21 @@
+{
+  "config": {
+    "circleCount": 32,
+    "circleRadius": 14,
+    "orbitRadius": 40,
+    "wiggleAmplitude": 20,
+    "wiggleSpeed": 0.0017,
+    "rotationSpeed": 0.029500000000000002,
+    "blurAmount": 21.5,
+    "orbitOffset": 0
+  },
+  "colors": [
+    "#B300FF",
+    "#FF230A",
+    "#F97901",
+    "#FB045A",
+    "#6000F0"
+  ],
+  "timestamp": "2025-10-06T22:36:07.449Z",
+  "version": "1.0"
+}

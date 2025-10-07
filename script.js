@@ -22,7 +22,7 @@ updateCenter();
 
 // Configuration variables (controlled by UI)
 let config = {
-    circleCount: 6,
+    shapeCount: 6,
     circleRadius: 40,
     orbitRadius: 41,
     wiggleAmplitude: 6.5,
@@ -30,6 +30,9 @@ let config = {
     rotationSpeed: 1, // 0-10 scale (converted internally)
     blurAmount: 42,
     orbitOffset: 0,
+    shapeType: 0, // 0 = circle, 1 = square
+    squareWidth: 40,
+    squareHeight: 40,
 };
 
 // Scaling functions for speed controls
@@ -111,10 +114,27 @@ class OrbitCircle {
             ctx.filter = "none";
         }
 
-        // Draw colored circle
+        // Draw colored shape
         ctx.beginPath();
         ctx.fillStyle = this.color;
-        ctx.arc(x, y, this.radius, 0, Math.PI * 2);
+
+        if (config.shapeType === 0) {
+            // Draw circle
+            ctx.arc(x, y, this.radius, 0, Math.PI * 2);
+        } else {
+            // Draw rotated square facing center
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(this.angle); // Rotate to face center with flat side
+            ctx.rect(
+                -config.squareWidth / 2,
+                -config.squareHeight / 2,
+                config.squareWidth,
+                config.squareHeight,
+            );
+            ctx.restore();
+        }
+
         ctx.fill();
 
         // Reset filter
@@ -130,7 +150,7 @@ function createCircles() {
 
     // Create shuffled color array for balanced distribution
     const shuffledColors = [];
-    for (let i = 0; i < config.circleCount; i++) {
+    for (let i = 0; i < config.shapeCount; i++) {
         shuffledColors.push(colors[i % colors.length]);
     }
 
@@ -143,8 +163,8 @@ function createCircles() {
         ];
     }
 
-    for (let i = 0; i < config.circleCount; i++) {
-        const startAngle = (i / config.circleCount) * Math.PI * 2;
+    for (let i = 0; i < config.shapeCount; i++) {
+        const startAngle = (i / config.shapeCount) * Math.PI * 2;
         const circle = new OrbitCircle(
             config.orbitRadius,
             scaleRotationSpeed(config.rotationSpeed),
@@ -175,7 +195,7 @@ function animate() {
 // UI Control System
 function setupControls() {
     const controls = {
-        circleCount: { min: 1, max: 32, step: 1 },
+        shapeCount: { min: 1, max: 32, step: 1 },
         circleRadius: { min: 2, max: 100, step: 1 },
         orbitRadius: { min: 0, max: 300, step: 1 },
         wiggleAmplitude: { min: 0, max: 20, step: 0.5 },
@@ -183,6 +203,9 @@ function setupControls() {
         rotationSpeed: { min: 0, max: 10, step: 0.1 },
         blurAmount: { min: 0, max: 56, step: 0.5 },
         orbitOffset: { min: 0, max: 10, step: 0.5 },
+        shapeType: { min: 0, max: 1, step: 1 },
+        squareWidth: { min: 2, max: 100, step: 1 },
+        squareHeight: { min: 2, max: 100, step: 1 },
     };
 
     Object.keys(controls).forEach((key) => {
@@ -197,10 +220,34 @@ function setupControls() {
             // Update all UI elements
             slider.value = numValue;
             input.value = numValue;
-            valueDisplay.textContent = numValue;
+
+            if (key === "shapeType") {
+                valueDisplay.textContent = numValue === 0 ? "Circle" : "Square";
+                // Show/hide appropriate controls
+                const squareControls =
+                    document.getElementById("squareControls");
+                const squareHeightSection = document.getElementById(
+                    "squareHeightSection",
+                );
+                const sizeControl = document.getElementById("sizeControl");
+
+                if (numValue === 1) {
+                    // Show square controls, hide circle size
+                    squareControls.style.display = "block";
+                    squareHeightSection.style.display = "block";
+                    if (sizeControl) sizeControl.style.display = "none";
+                } else {
+                    // Show circle size, hide square controls
+                    squareControls.style.display = "none";
+                    squareHeightSection.style.display = "none";
+                    if (sizeControl) sizeControl.style.display = "block";
+                }
+            } else {
+                valueDisplay.textContent = numValue;
+            }
 
             // Recreate circles if count changed
-            if (key === "circleCount") {
+            if (key === "shapeCount") {
                 createCircles();
             }
         }
@@ -230,7 +277,7 @@ function setupControls() {
 // Reset to defaults function
 function resetToDefaults() {
     config = {
-        circleCount: 6,
+        shapeCount: 6,
         circleRadius: 40,
         orbitRadius: 41,
         wiggleAmplitude: 6.5,
@@ -238,6 +285,9 @@ function resetToDefaults() {
         rotationSpeed: 1,
         blurAmount: 42,
         orbitOffset: 0,
+        shapeType: 0,
+        squareWidth: 40,
+        squareHeight: 40,
     };
 
     // Update all controls
@@ -448,7 +498,7 @@ function importPreferences() {
 
         // Validate config keys
         const requiredConfigKeys = [
-            "circleCount",
+            "shapeCount",
             "circleRadius",
             "orbitRadius",
             "wiggleAmplitude",

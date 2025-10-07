@@ -481,9 +481,12 @@ function importPreferences() {
         const preferences = JSON.parse(jsonText);
         console.log("Parsed preferences:", preferences);
 
-        // Validate structure
-        if (!preferences.config || !Array.isArray(preferences.colors)) {
-            throw new Error("Missing config or colors array");
+        // Validate basic structure - allow partial configs
+        if (!preferences.config) {
+            preferences.config = {};
+        }
+        if (!Array.isArray(preferences.colors)) {
+            preferences.colors = [];
         }
 
         // Convert imported speeds from actual values back to UI scale
@@ -496,41 +499,40 @@ function importPreferences() {
                 preferences.config.rotationSpeed / 0.005; // Convert back to 0-10 scale
         }
 
-        // Validate config keys
-        const requiredConfigKeys = [
-            "shapeCount",
-            "circleRadius",
-            "orbitRadius",
-            "wiggleAmplitude",
-            "wiggleSpeed",
-            "rotationSpeed",
-            "blurAmount",
-            "orbitOffset",
-        ];
-        const missingKeys = requiredConfigKeys.filter(
-            (key) => !(key in preferences.config),
-        );
-        if (missingKeys.length > 0) {
-            console.warn("Missing config keys:", missingKeys);
-        }
+        // Define defaults for missing values
+        const defaults = {
+            shapeCount: 6,
+            circleRadius: 40,
+            orbitRadius: 41,
+            wiggleAmplitude: 6.5,
+            wiggleSpeed: 1,
+            rotationSpeed: 1,
+            blurAmount: 42,
+            orbitOffset: 0,
+            shapeType: 0,
+            squareWidth: 40,
+            squareHeight: 40,
+        };
 
-        // Validate colors
-        if (preferences.colors.length === 0) {
-            throw new Error("Colors array cannot be empty");
-        }
-
-        // Apply config with validation
-        Object.keys(config).forEach((key) => {
+        // Apply config with defaults for missing values
+        Object.keys(defaults).forEach((key) => {
             if (
                 preferences.config.hasOwnProperty(key) &&
                 typeof preferences.config[key] === "number"
             ) {
                 config[key] = preferences.config[key];
+            } else {
+                // Use default if missing or invalid
+                config[key] = defaults[key];
+                console.log(
+                    `Using default for missing/invalid parameter: ${key} = ${defaults[key]}`,
+                );
             }
         });
 
-        // Apply colors with validation
+        // Apply colors with fallback to defaults
         if (
+            preferences.colors.length > 0 &&
             preferences.colors.every(
                 (color) =>
                     typeof color === "string" &&
@@ -539,8 +541,10 @@ function importPreferences() {
         ) {
             colors = [...preferences.colors];
         } else {
-            throw new Error(
-                "Invalid color format. Colors must be hex codes like #FF0000",
+            // Use default colors if missing or invalid
+            colors = ["#B300FF", "#FF230A", "#F97901", "#FB045A", "#6000F0"];
+            console.log(
+                "Using default colors due to missing/invalid color data",
             );
         }
 

@@ -1,13 +1,16 @@
 {
   "config": {
-    "circleCount": 32,
+    "shapeCount": 24,
     "circleRadius": 14,
     "orbitRadius": 40,
     "wiggleAmplitude": 20,
     "wiggleSpeed": 0.0017,
     "rotationSpeed": 0.029500000000000002,
-    "blurAmount": 21.5,
-    "orbitOffset": 0
+    "blurAmount": 31.5,
+    "orbitOffset": 0,
+    "shapeType": 0,
+    "squareWidth": 40,
+    "squareHeight": 40
   },
   "colors": [
     "#B300FF",
@@ -16,6 +19,6 @@
     "#FB045A",
     "#6000F0"
   ],
-  "timestamp": "2025-10-06T22:36:07.449Z",
+  "timestamp": "2025-10-07T10:24:14.138Z",
   "version": "1.0"
 }

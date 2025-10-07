@@ -227,6 +227,9 @@ function setupControls() {
             if (key === "shapeCount") {
                 createCircles();
             }
+
+            // Update URL with new preferences
+            updateURL();
         }
 
         // Slider event
@@ -309,6 +312,7 @@ function addColor() {
         colors.push(newColor);
         updateColorDisplay();
         createCircles(); // Recreate circles with new color palette
+        updateURL(); // Update URL with new colors
     }
 }
 
@@ -318,6 +322,7 @@ function removeColor(index) {
         colors.splice(index, 1);
         updateColorDisplay();
         createCircles(); // Recreate circles with updated palette
+        updateURL(); // Update URL with updated colors
     }
 }
 
@@ -548,6 +553,9 @@ function importPreferences() {
         updateColorDisplay();
         createCircles();
 
+        // Update URL with reset preferences
+        updateURL();
+
         // Clear textarea and show success
         textarea.value = "";
 
@@ -604,12 +612,127 @@ function setShape(shapeValue) {
         squareHeightSection.style.display = "none";
         if (sizeControl) sizeControl.style.display = "block";
     }
+
+    // Update URL when shape changes
+    updateURL();
+}
+
+// URL Parameter System
+function updateURL() {
+    const preferences = {
+        config: {
+            ...config,
+            // Convert scaled speeds back to actual values for URL
+            wiggleSpeed: scaleWiggleSpeed(config.wiggleSpeed),
+            rotationSpeed: scaleRotationSpeed(config.rotationSpeed),
+        },
+        colors: [...colors],
+    };
+
+    const encoded = btoa(JSON.stringify(preferences));
+    const url = new URL(window.location);
+    url.searchParams.set("p", encoded);
+    window.history.replaceState({}, "", url);
+}
+
+function loadFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const encoded = urlParams.get("p");
+
+    if (!encoded) return;
+
+    try {
+        const preferences = JSON.parse(atob(encoded));
+
+        if (!preferences.config) preferences.config = {};
+        if (!Array.isArray(preferences.colors)) preferences.colors = [];
+
+        // Convert imported speeds from actual values back to UI scale
+        if (preferences.config.wiggleSpeed !== undefined) {
+            preferences.config.wiggleSpeed =
+                preferences.config.wiggleSpeed / 0.001;
+        }
+        if (preferences.config.rotationSpeed !== undefined) {
+            preferences.config.rotationSpeed =
+                preferences.config.rotationSpeed / 0.005;
+        }
+
+        // Define defaults for missing values
+        const defaults = {
+            shapeCount: 6,
+            circleRadius: 40,
+            orbitRadius: 41,
+            wiggleAmplitude: 6.5,
+            wiggleSpeed: 1,
+            rotationSpeed: 1,
+            blurAmount: 42,
+            orbitOffset: 0,
+            shapeType: 0,
+            squareWidth: 40,
+            squareHeight: 40,
+        };
+
+        // Apply config with defaults for missing values
+        Object.keys(defaults).forEach((key) => {
+            if (
+                preferences.config.hasOwnProperty(key) &&
+                typeof preferences.config[key] === "number"
+            ) {
+                config[key] = preferences.config[key];
+            } else {
+                config[key] = defaults[key];
+            }
+        });
+
+        // Apply colors with fallback to defaults
+        if (
+            preferences.colors.length > 0 &&
+            preferences.colors.every(
+                (color) =>
+                    typeof color === "string" &&
+                    /^#[0-9A-Fa-f]{6}$/.test(color),
+            )
+        ) {
+            colors = [...preferences.colors];
+        } else {
+            colors = ["#B300FF", "#FF230A", "#F97901", "#FB045A", "#6000F0"];
+        }
+
+        console.log("Loaded preferences from URL");
+    } catch (error) {
+        console.warn("Failed to load preferences from URL:", error);
+    }
+}
+
+// Update UI controls to reflect current config values
+function updateUIFromConfig() {
+    // Update all controls
+    Object.keys(config).forEach((key) => {
+        if (key === "shapeType") {
+            // Handle shape tabs separately
+            setShape(config[key]);
+            return;
+        }
+
+        const slider = document.getElementById(key);
+        const input = document.getElementById(key + "Input");
+        const valueDisplay = document.getElementById(key + "Value");
+
+        if (slider && input && valueDisplay) {
+            slider.value = config[key];
+            input.value = config[key];
+            valueDisplay.textContent = config[key];
+        }
+    });
 }
 
 // Initialize controls when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
+    loadFromURL(); // Load from URL first
     setupControls();
     updateColorDisplay();
+    updateUIFromConfig(); // Update UI controls to reflect loaded config
+    createCircles();
 });
 
 // Start the animation

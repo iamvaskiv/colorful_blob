@@ -203,7 +203,7 @@ function setupControls() {
         rotationSpeed: { min: 0, max: 10, step: 0.1 },
         blurAmount: { min: 0, max: 56, step: 0.5 },
         orbitOffset: { min: 0, max: 10, step: 0.5 },
-        shapeType: { min: 0, max: 1, step: 1 },
+
         squareWidth: { min: 2, max: 100, step: 1 },
         squareHeight: { min: 2, max: 100, step: 1 },
     };
@@ -221,30 +221,7 @@ function setupControls() {
             slider.value = numValue;
             input.value = numValue;
 
-            if (key === "shapeType") {
-                valueDisplay.textContent = numValue === 0 ? "Circle" : "Square";
-                // Show/hide appropriate controls
-                const squareControls =
-                    document.getElementById("squareControls");
-                const squareHeightSection = document.getElementById(
-                    "squareHeightSection",
-                );
-                const sizeControl = document.getElementById("sizeControl");
-
-                if (numValue === 1) {
-                    // Show square controls, hide circle size
-                    squareControls.style.display = "block";
-                    squareHeightSection.style.display = "block";
-                    if (sizeControl) sizeControl.style.display = "none";
-                } else {
-                    // Show circle size, hide square controls
-                    squareControls.style.display = "none";
-                    squareHeightSection.style.display = "none";
-                    if (sizeControl) sizeControl.style.display = "block";
-                }
-            } else {
-                valueDisplay.textContent = numValue;
-            }
+            valueDisplay.textContent = numValue;
 
             // Recreate circles if count changed
             if (key === "shapeCount") {
@@ -548,8 +525,14 @@ function importPreferences() {
             );
         }
 
-        // Update all UI controls
+        // Update all controls
         Object.keys(config).forEach((key) => {
+            if (key === "shapeType") {
+                // Handle shape tabs separately
+                setShape(config[key]);
+                return;
+            }
+
             const slider = document.getElementById(key);
             const input = document.getElementById(key + "Input");
             const valueDisplay = document.getElementById(key + "Value");
@@ -590,6 +573,36 @@ function importPreferences() {
         alert(
             `Import failed: ${error.message}\n\nCheck the console for details.`,
         );
+    }
+}
+
+// Shape tab control function
+function setShape(shapeValue) {
+    config.shapeType = shapeValue;
+
+    // Update tab appearance
+    document.querySelectorAll(".shape-tab").forEach((tab) => {
+        tab.classList.remove("active");
+    });
+    document
+        .querySelector(`[data-shape="${shapeValue}"]`)
+        .classList.add("active");
+
+    // Show/hide appropriate controls
+    const squareControls = document.getElementById("squareControls");
+    const squareHeightSection = document.getElementById("squareHeightSection");
+    const sizeControl = document.getElementById("sizeControl");
+
+    if (shapeValue === 1) {
+        // Show square controls, hide circle size
+        squareControls.style.display = "block";
+        squareHeightSection.style.display = "block";
+        if (sizeControl) sizeControl.style.display = "none";
+    } else {
+        // Show circle size, hide square controls
+        squareControls.style.display = "none";
+        squareHeightSection.style.display = "none";
+        if (sizeControl) sizeControl.style.display = "block";
     }
 }
 

@@ -150,6 +150,42 @@
                 transform: translateY(-1px);
             }
 
+            .shape-tabs {
+                display: flex;
+                gap: 4px;
+                width: 100%;
+            }
+
+            .shape-tab {
+                flex: 1;
+                padding: 8px 16px;
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 6px;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 11px;
+                cursor: pointer;
+                text-align: center;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: all 0.3s ease;
+                user-select: none;
+            }
+
+            .shape-tab:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+                color: rgba(255, 255, 255, 0.9);
+            }
+
+            .shape-tab.active {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+                color: white;
+                font-weight: 600;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
+
             .color-list {
                 display: flex;
                 flex-wrap: wrap;
@@ -291,27 +327,17 @@
         <div class="controls-panel">
             <div class="control-section">
                 <div class="control-title">Shape</div>
-                <div class="control-row">
-                    <input
-                        type="range"
-                        class="slider"
-                        id="shapeType"
-                        min="0"
-                        max="1"
-                        step="1"
-                        value="0"
-                    />
-                    <select
-                        class="number-input"
-                        id="shapeTypeInput"
-                        style="width: 80px; text-align: center"
+                <div class="shape-tabs">
+                    <div
+                        class="shape-tab active"
+                        data-shape="0"
+                        onclick="setShape(0)"
                     >
-                        <option value="0">Circle</option>
-                        <option value="1">Square</option>
-                    </select>
-                </div>
-                <div class="value-display">
-                    Current: <span id="shapeTypeValue">Circle</span>
+                        Circle
+                    </div>
+                    <div class="shape-tab" data-shape="1" onclick="setShape(1)">
+                        Square
+                    </div>
                 </div>
             </div>
 
